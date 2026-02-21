@@ -1,0 +1,18 @@
+1708423200000 QNX kernel syslogd service started
+1708423205000 QNX kernel NetworkManager service started
+1708423210000 QNX kernel GpsService service started
+1708423215000 QNX kernel GpsService service crashed
+1708423220000 QNX kernel WatchdogService watchdog triggered
+1708423225000 QNX kernel System reset detected
+1708423235000 QNX kernel GpsService service started
+1708423240000 QNX kernel GpsService service crashed
+1708423245000 QNX kernel WatchdogService watchdog triggered
+1708423250000 QNX kernel System reset detected
+1708423260000 QNX kernel GpsService service started
+1708423265000 QNX kernel GpsService service crashed
+1708423270000 QNX kernel NetworkManager timeout occurred
+1708423275000 QNX system discrepancy in state management
+1708423280000 QNX kernel NetworkManager timeout occurred
+1708423285000 QNX kernel GpsService service crashed
+1708423290000 QNX framework abnormal behavior deviation
+1708423295000 QNX kernel System reset detected

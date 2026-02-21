@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validation Report</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #333; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+    header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 8px; margin-bottom: 40px; }
+    h1 { font-size: 32px; margin-bottom: 10px; }
+    h2 { font-size: 22px; margin: 30px 0 15px 0; color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+    h3 { font-size: 16px; margin: 15px 0 10px 0; color: #555; }
+    .timestamp { font-size: 14px; opacity: 0.9; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
+    .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .metric-label { font-size: 12px; text-transform: uppercase; color: #999; margin-bottom: 8px; font-weight: 600; }
+    .metric-value { font-size: 36px; font-weight: bold; color: #667eea; }
+    .card.critical .metric-value { color: #e74c3c; }
+    .card.warning .metric-value { color: #f39c12; }
+    .card.success .metric-value { color: #27ae60; }
+    .details { background: white; padding: 30px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .event-timeline { list-style: none; padding: 0; }
+    .event-item { padding: 20px; margin: 15px 0; border-left: 4px solid #ddd; background: #f9f9f9; border-radius: 4px; }
+    .event-item.CRITICAL { border-left-color: #e74c3c; background: #ffe8e8; }
+    .event-item.WARNING { border-left-color: #f39c12; background: #fff8e8; }
+    .event-item.INFO { border-left-color: #27ae60; background: #e8f9e8; }
+    .event-time { font-size: 12px; color: #999; font-weight: 600; font-family: monospace; }
+    .event-type { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin: 8px 0; }
+    .event-type.CRITICAL { background: #e74c3c; color: white; }
+    .event-type.WARNING { background: #f39c12; color: white; }
+    .event-type.INFO { background: #27ae60; color: white; }
+    .event-domain { font-weight: 600; color: #667eea; }
+    .event-log { font-family: 'Monaco', 'Menlo', monospace; font-size: 12px; background: white; padding: 12px; border-radius: 4px; margin-top: 10px; border: 1px solid #ddd; color: #555; word-break: break-all; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: #f8f9fa; padding: 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #ddd; }
+    td { padding: 12px; border-bottom: 1px solid #eee; }
+    tr:hover { background: #f8f9fa; }
+    .status-pass { color: #27ae60; font-weight: 600; }
+    .status-fail { color: #e74c3c; font-weight: 600; }
+    .status-warn { color: #f39c12; font-weight: 600; }
+    footer { text-align: center; margin-top: 40px; color: #999; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Cross-Domain Automotive Log Validation Report</h1>
+      <p class="timestamp">Generated: 2026-02-21 00:40:19</p>
+    </header>
+    <div class="summary">
+      <div class="card critical">
+        <div class="metric-label">Service Crashes</div>
+        <div class="metric-value">7</div>
+      </div>
+      <div class="card critical">
+        <div class="metric-label">System Crashes</div>
+        <div class="metric-value">1</div>
+      </div>
+      <div class="card warning">
+        <div class="metric-label">Timeouts</div>
+        <div class="metric-value">5</div>
+      </div>
+      <div class="card critical">
+        <div class="metric-label">Resets</div>
+        <div class="metric-value">5</div>
+      </div>
+      <div class="card critical">
+        <div class="metric-label">Discrepancies</div>
+        <div class="metric-value">2</div>
+      </div>
+      <div class="card critical">
+        <div class="metric-label">Deviations</div>
+        <div class="metric-value">2</div>
+      </div>
+      <div class="card warning">
+        <div class="metric-label">Watchdog Triggers</div>
+        <div class="metric-value">4</div>
+      </div>
+      <div class="card success">
+        <div class="metric-label">Service Starts</div>
+        <div class="metric-value">10</div>
+      </div>
+    </div>
+    <div class="details">
+      <h2>System Boot Analysis</h2>
+      <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Boot Duration</td><td>62000 ms (62.00 seconds)</td></tr>
+      </table>
+    </div>
+    <div class="details">
+      <h2>📋 Critical Issues & Warnings Timeline (FAULTS Only)</h2>
+      <p style="margin-bottom: 20px; color: #e74c3c; font-weight: bold;">⚠️ Showing ONLY Critical & Warning events (excluding successful service starts)</p>
+      <ul class="event-timeline">
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423215000ms (1708423215s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type CRITICAL">Service Crash</span>
+          <div><strong>AFFECTED SERVICE:</strong> <code>kernel</code></div>
+          <div><strong>HOW:</strong> Process terminated unexpectedly - memory fault, segmentation fault, or assertion failure</div>
+          <div><strong>ROOT CAUSE:</strong> Service process encountered a critical error and crashed</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> Service unavailable - dependent modules unable to communicate</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System functionality impaired</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Service must be restarted; investigate crash logs for segfaults or out-of-memory conditions</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423215000 QNX kernel GpsService service crashed</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423217000ms (1708423217s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type CRITICAL">Service Crash</span>
+          <div><strong>AFFECTED SERVICE:</strong> <code>services</code></div>
+          <div><strong>HOW:</strong> Process terminated unexpectedly - memory fault, segmentation fault, or assertion failure</div>
+          <div><strong>ROOT CAUSE:</strong> Service process encountered a critical error and crashed</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> Service unavailable - dependent modules unable to communicate</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System functionality impaired</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Service must be restarted; investigate crash logs for segfaults or out-of-memory conditions</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423217000 Android services MediaServer service crashed</div>
+        </li>
+        <li class="event-item WARNING">
+          <div class="event-time">⏱️  WHEN: 1708423220000ms (1708423220s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type WARNING">Watchdog Trigger</span>
+          <div><strong>HOW:</strong> Watchdog timer expired - system became unresponsive</div>
+          <div><strong>ROOT CAUSE:</strong> System did not service watchdog within expected interval</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>IMPACT:</strong> Automatic recovery activated - system reset initiated</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>SEVERITY:</strong> WARNING - Recovery mechanism triggered</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Reduce system load; identify interrupt latency issues; check for CPU-bound processes blocking watchdog</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423220000 QNX kernel WatchdogService watchdog triggered</div>
+        </li>
+        <li class="event-item WARNING">
+          <div class="event-time">⏱️  WHEN: 1708423222000ms (1708423222s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type WARNING">Watchdog Trigger</span>
+          <div><strong>HOW:</strong> Watchdog timer expired - system became unresponsive</div>
+          <div><strong>ROOT CAUSE:</strong> System did not service watchdog within expected interval</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>IMPACT:</strong> Automatic recovery activated - system reset initiated</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>SEVERITY:</strong> WARNING - Recovery mechanism triggered</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Reduce system load; identify interrupt latency issues; check for CPU-bound processes blocking watchdog</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423222000 Android framework watchdog triggered</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423225000ms (1708423225s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type CRITICAL">Reset/Reboot</span>
+          <div><strong>HOW:</strong> System restarted - all services reset and reinitialized</div>
+          <div><strong>ROOT CAUSE:</strong> 1708423225000 QNX kernel System reset detected</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> All services terminated and restarted; pending operations lost</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System reset</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Analyze logs before reset to identify root cause; implement watchdog timeout extensions if legitimate</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423225000 QNX kernel System reset detected</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423227000ms (1708423227s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type CRITICAL">Reset/Reboot</span>
+          <div><strong>HOW:</strong> System restarted - all services reset and reinitialized</div>
+          <div><strong>ROOT CAUSE:</strong> 1708423227000 Android system reset rebooted</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> All services terminated and restarted; pending operations lost</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System reset</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Analyze logs before reset to identify root cause; implement watchdog timeout extensions if legitimate</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423227000 Android system reset rebooted</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423240000ms (1708423240s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type CRITICAL">Service Crash</span>
+          <div><strong>AFFECTED SERVICE:</strong> <code>kernel</code></div>
+          <div><strong>HOW:</strong> Process terminated unexpectedly - memory fault, segmentation fault, or assertion failure</div>
+          <div><strong>ROOT CAUSE:</strong> Service process encountered a critical error and crashed</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> Service unavailable - dependent modules unable to communicate</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System functionality impaired</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Service must be restarted; investigate crash logs for segfaults or out-of-memory conditions</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423240000 QNX kernel GpsService service crashed</div>
+        </li>
+        <li class="event-item WARNING">
+          <div class="event-time">⏱️  WHEN: 1708423242000ms (1708423242s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type WARNING">Timeout</span>
+          <div><strong>AFFECTED SERVICE:</strong> <code>services</code></div>
+          <div><strong>HOW:</strong> Operation did not complete within expected time window - blocked on I/O or infinite loop</div>
+          <div><strong>ROOT CAUSE:</strong> Service unresponsive or performing slow operation exceeding timeout threshold</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>IMPACT:</strong> Performance degradation; caller threads blocked waiting for response</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>SEVERITY:</strong> WARNING - System degraded but functional</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Increase timeout threshold if operation is legitimately slow; identify I/O bottlenecks or deadlocks</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423242000 Android services AudioFlinger timeout occurred</div>
+        </li>
+        <li class="event-item WARNING">
+          <div class="event-time">⏱️  WHEN: 1708423245000ms (1708423245s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type WARNING">Watchdog Trigger</span>
+          <div><strong>HOW:</strong> Watchdog timer expired - system became unresponsive</div>
+          <div><strong>ROOT CAUSE:</strong> System did not service watchdog within expected interval</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>IMPACT:</strong> Automatic recovery activated - system reset initiated</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>SEVERITY:</strong> WARNING - Recovery mechanism triggered</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Reduce system load; identify interrupt latency issues; check for CPU-bound processes blocking watchdog</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423245000 QNX kernel WatchdogService watchdog triggered</div>
+        </li>
+        <li class="event-item WARNING">
+          <div class="event-time">⏱️  WHEN: 1708423247000ms (1708423247s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type WARNING">Watchdog Trigger</span>
+          <div><strong>HOW:</strong> Watchdog timer expired - system became unresponsive</div>
+          <div><strong>ROOT CAUSE:</strong> System did not service watchdog within expected interval</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>IMPACT:</strong> Automatic recovery activated - system reset initiated</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>SEVERITY:</strong> WARNING - Recovery mechanism triggered</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Reduce system load; identify interrupt latency issues; check for CPU-bound processes blocking watchdog</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423247000 Android framework watchdog triggered</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423250000ms (1708423250s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type CRITICAL">Reset/Reboot</span>
+          <div><strong>HOW:</strong> System restarted - all services reset and reinitialized</div>
+          <div><strong>ROOT CAUSE:</strong> 1708423250000 QNX kernel System reset GpsService failed</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> All services terminated and restarted; pending operations lost</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System reset</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Analyze logs before reset to identify root cause; implement watchdog timeout extensions if legitimate</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423250000 QNX kernel System reset GpsService failed</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423252000ms (1708423252s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type CRITICAL">System Crash</span>
+          <div><strong>HOW:</strong> Core system failure detected - kernel panic or critical driver error</div>
+          <div><strong>ROOT CAUSE:</strong> 1708423252000 Android system reset after crash</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> Entire system unstable - reboot required</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System-level failure</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Immediate system reboot required; collect kernel panic logs for analysis</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423252000 Android system reset after crash</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423265000ms (1708423265s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type CRITICAL">Service Crash</span>
+          <div><strong>AFFECTED SERVICE:</strong> <code>kernel</code></div>
+          <div><strong>HOW:</strong> Process terminated unexpectedly - memory fault, segmentation fault, or assertion failure</div>
+          <div><strong>ROOT CAUSE:</strong> Service process encountered a critical error and crashed</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> Service unavailable - dependent modules unable to communicate</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System functionality impaired</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Service must be restarted; investigate crash logs for segfaults or out-of-memory conditions</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423265000 QNX kernel GpsService service crashed</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423267000ms (1708423267s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type CRITICAL">Service Crash</span>
+          <div><strong>AFFECTED SERVICE:</strong> <code>services</code></div>
+          <div><strong>HOW:</strong> Process terminated unexpectedly - memory fault, segmentation fault, or assertion failure</div>
+          <div><strong>ROOT CAUSE:</strong> Service process encountered a critical error and crashed</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> Service unavailable - dependent modules unable to communicate</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System functionality impaired</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Service must be restarted; investigate crash logs for segfaults or out-of-memory conditions</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423267000 Android services MediaServer service crashed</div>
+        </li>
+        <li class="event-item WARNING">
+          <div class="event-time">⏱️  WHEN: 1708423270000ms (1708423270s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type WARNING">Timeout</span>
+          <div><strong>AFFECTED SERVICE:</strong> <code>kernel</code></div>
+          <div><strong>HOW:</strong> Operation did not complete within expected time window - blocked on I/O or infinite loop</div>
+          <div><strong>ROOT CAUSE:</strong> Service unresponsive or performing slow operation exceeding timeout threshold</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>IMPACT:</strong> Performance degradation; caller threads blocked waiting for response</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>SEVERITY:</strong> WARNING - System degraded but functional</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Increase timeout threshold if operation is legitimately slow; identify I/O bottlenecks or deadlocks</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423270000 QNX kernel NetworkManager timeout</div>
+        </li>
+        <li class="event-item WARNING">
+          <div class="event-time">⏱️  WHEN: 1708423272000ms (1708423272s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type WARNING">Timeout</span>
+          <div><strong>AFFECTED SERVICE:</strong> <code>services</code></div>
+          <div><strong>HOW:</strong> Operation did not complete within expected time window - blocked on I/O or infinite loop</div>
+          <div><strong>ROOT CAUSE:</strong> Service unresponsive or performing slow operation exceeding timeout threshold</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>IMPACT:</strong> Performance degradation; caller threads blocked waiting for response</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>SEVERITY:</strong> WARNING - System degraded but functional</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Increase timeout threshold if operation is legitimately slow; identify I/O bottlenecks or deadlocks</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423272000 Android services AudioFlinger timeout</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423275000ms (1708423275s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type CRITICAL">Discrepancy</span>
+          <div><strong>HOW:</strong> Cross-domain state mismatch detected during validation</div>
+          <div><strong>ROOT CAUSE:</strong> 1708423275000 QNX system discrepancy QNX vs Android</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> QNX and Android domains have inconsistent internal state - coordination failed</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - Data consistency violation</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Implement state synchronization; add consistency checks; review message passing protocol</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423275000 QNX system discrepancy QNX vs Android</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423277000ms (1708423277s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type CRITICAL">Discrepancy</span>
+          <div><strong>HOW:</strong> Cross-domain state mismatch detected during validation</div>
+          <div><strong>ROOT CAUSE:</strong> 1708423277000 Android system discrepancy in messaging</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> QNX and Android domains have inconsistent internal state - coordination failed</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - Data consistency violation</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Implement state synchronization; add consistency checks; review message passing protocol</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423277000 Android system discrepancy in messaging</div>
+        </li>
+        <li class="event-item WARNING">
+          <div class="event-time">⏱️  WHEN: 1708423280000ms (1708423280s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type WARNING">Timeout</span>
+          <div><strong>AFFECTED SERVICE:</strong> <code>kernel</code></div>
+          <div><strong>HOW:</strong> Operation did not complete within expected time window - blocked on I/O or infinite loop</div>
+          <div><strong>ROOT CAUSE:</strong> Service unresponsive or performing slow operation exceeding timeout threshold</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>IMPACT:</strong> Performance degradation; caller threads blocked waiting for response</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>SEVERITY:</strong> WARNING - System degraded but functional</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Increase timeout threshold if operation is legitimately slow; identify I/O bottlenecks or deadlocks</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423280000 QNX kernel NetworkManager timeout occurred</div>
+        </li>
+        <li class="event-item WARNING">
+          <div class="event-time">⏱️  WHEN: 1708423282000ms (1708423282s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type WARNING">Timeout</span>
+          <div><strong>AFFECTED SERVICE:</strong> <code>services</code></div>
+          <div><strong>HOW:</strong> Operation did not complete within expected time window - blocked on I/O or infinite loop</div>
+          <div><strong>ROOT CAUSE:</strong> Service unresponsive or performing slow operation exceeding timeout threshold</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>IMPACT:</strong> Performance degradation; caller threads blocked waiting for response</div>
+          <div style="margin-top: 8px; color: #f39c12;"><strong>SEVERITY:</strong> WARNING - System degraded but functional</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Increase timeout threshold if operation is legitimately slow; identify I/O bottlenecks or deadlocks</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423282000 Android services AudioFlinger timeout</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423285000ms (1708423285s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type CRITICAL">Service Crash</span>
+          <div><strong>AFFECTED SERVICE:</strong> <code>kernel</code></div>
+          <div><strong>HOW:</strong> Process terminated unexpectedly - memory fault, segmentation fault, or assertion failure</div>
+          <div><strong>ROOT CAUSE:</strong> Service process encountered a critical error and crashed</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> Service unavailable - dependent modules unable to communicate</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System functionality impaired</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Service must be restarted; investigate crash logs for segfaults or out-of-memory conditions</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423285000 QNX kernel GpsService service crashed</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423287000ms (1708423287s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type CRITICAL">Service Crash</span>
+          <div><strong>AFFECTED SERVICE:</strong> <code>services</code></div>
+          <div><strong>HOW:</strong> Process terminated unexpectedly - memory fault, segmentation fault, or assertion failure</div>
+          <div><strong>ROOT CAUSE:</strong> Service process encountered a critical error and crashed</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> Service unavailable - dependent modules unable to communicate</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System functionality impaired</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Service must be restarted; investigate crash logs for segfaults or out-of-memory conditions</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423287000 Android services MediaServer service crashed</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423290000ms (1708423290s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type CRITICAL">Deviation</span>
+          <div><strong>HOW:</strong> Unexpected system behavior detected outside normal operating parameters</div>
+          <div><strong>ROOT CAUSE:</strong> 1708423290000 QNX framework abnormal deviation</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> System exhibiting abnormal behavior - may indicate underlying defect</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - Potential system defect</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Enable detailed logging; profile system behavior; unit test affected modules</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423290000 QNX framework abnormal deviation</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423292000ms (1708423292s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type CRITICAL">Deviation</span>
+          <div><strong>HOW:</strong> Unexpected system behavior detected outside normal operating parameters</div>
+          <div><strong>ROOT CAUSE:</strong> 1708423292000 Android framework abnormal behavior detected</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> System exhibiting abnormal behavior - may indicate underlying defect</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - Potential system defect</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Enable detailed logging; profile system behavior; unit test affected modules</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423292000 Android framework abnormal behavior detected</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423295000ms (1708423295s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: QNX</span></div>
+          <span class="event-type CRITICAL">Reset/Reboot</span>
+          <div><strong>HOW:</strong> System restarted - all services reset and reinitialized</div>
+          <div><strong>ROOT CAUSE:</strong> 1708423295000 QNX kernel System reset detected</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> All services terminated and restarted; pending operations lost</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System reset</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Analyze logs before reset to identify root cause; implement watchdog timeout extensions if legitimate</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423295000 QNX kernel System reset detected</div>
+        </li>
+        <li class="event-item CRITICAL">
+          <div class="event-time">⏱️  WHEN: 1708423297000ms (1708423297s:0ms)</div>
+          <div><span class="event-domain">📍 WHERE: Android</span></div>
+          <span class="event-type CRITICAL">Reset/Reboot</span>
+          <div><strong>HOW:</strong> System restarted - all services reset and reinitialized</div>
+          <div><strong>ROOT CAUSE:</strong> 1708423297000 Android system reset detected</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>IMPACT:</strong> All services terminated and restarted; pending operations lost</div>
+          <div style="margin-top: 8px; color: #c0392b;"><strong>SEVERITY:</strong> CRITICAL - System reset</div>
+          <div style="margin-top: 8px; background: #fff3cd; padding: 10px; border-radius: 4px;"><strong>REMEDIATION:</strong> Analyze logs before reset to identify root cause; implement watchdog timeout extensions if legitimate</div>
+          <div class="event-log">📄 <strong>Raw Log:</strong> 1708423297000 Android system reset detected</div>
+        </li>
+      </ul>
+    </div>
+    <div class="details">
+      <h2>💚 Service Health Scores & Reliability Analysis</h2>
+      <p style="margin-bottom: 15px;">Health score (0-100): Based on crash frequency, timeouts, and reliability. Higher is better.</p>
+      <table style="width: 100%;">
+        <tr><th>Service Name</th><th>Domain</th><th>Starts</th><th>Crashes</th><th>Timeouts</th><th>Total Failures</th><th>Failure Rate</th><th>Health Score</th></tr>
+        <tr><td><strong>kernel</strong></td><td>QNX</td><td>5</td><td>4</td><td>2</td><td>6</td><td>54.5%</td><td style="color: #f39c12; font-weight: bold;">72.7/100</td></tr>
+        <tr><td><strong>services</strong></td><td>Android</td><td>4</td><td>3</td><td>3</td><td>6</td><td>60.0%</td><td style="color: #f39c12; font-weight: bold;">70.0/100</td></tr>
+        <tr><td><strong>system</strong></td><td>Android</td><td>1</td><td>0</td><td>0</td><td>2</td><td>66.7%</td><td style="color: #f39c12; font-weight: bold;">66.7/100</td></tr>
+        <tr><td><strong>system</strong></td><td>QNX</td><td>0</td><td>0</td><td>0</td><td>2</td><td>100.0%</td><td style="color: #f39c12; font-weight: bold;">50.0/100</td></tr>
+      </table>
+    </div>
+    <div class="details">
+      <h2>🔄 Repetitive Errors & Crash Patterns</h2>
+      <p style="margin-bottom: 15px;">⚠️ These errors occurred multiple times, indicating a systematic issue requiring root cause analysis.</p>
+      <div style="margin-bottom: 20px; border-left: 4px solid #f39c12; padding: 15px; background: #f8f8f8; border-radius: 4px;">
+        <div style="color: #f39c12; font-weight: bold; font-size: 16px; margin-bottom: 8px;">4x Crash in QNX</div>
+        <div><strong>Affected Service:</strong> <code>kernel</code></div>
+        <div><strong>Average Time Between Failures:</strong> 23333ms (23.3 seconds)</div>
+        <div style="margin-top: 8px;"><strong>Occurrences at (ms):</strong> 1708423215000 1708423240000 1708423265000 1708423285000 </div>
+        <div style="margin-top: 8px; color: #e74c3c;"><strong>Action Required:</strong> This pattern indicates the issue is systematic and needs architectural fix, not just restart.</div>
+      </div>
+      <div style="margin-bottom: 20px; border-left: 4px solid #f39c12; padding: 15px; background: #f8f8f8; border-radius: 4px;">
+        <div style="color: #f39c12; font-weight: bold; font-size: 16px; margin-bottom: 8px;">3x Crash in Android</div>
+        <div><strong>Affected Service:</strong> <code>services</code></div>
+        <div><strong>Average Time Between Failures:</strong> 35000ms (35.0 seconds)</div>
+        <div style="margin-top: 8px;"><strong>Occurrences at (ms):</strong> 1708423217000 1708423267000 1708423287000 </div>
+        <div style="margin-top: 8px; color: #e74c3c;"><strong>Action Required:</strong> This pattern indicates the issue is systematic and needs architectural fix, not just restart.</div>
+      </div>
+      <div style="margin-bottom: 20px; border-left: 4px solid #f39c12; padding: 15px; background: #f8f8f8; border-radius: 4px;">
+        <div style="color: #f39c12; font-weight: bold; font-size: 16px; margin-bottom: 8px;">3x Timeout in Android</div>
+        <div><strong>Affected Service:</strong> <code>services</code></div>
+        <div><strong>Average Time Between Failures:</strong> 20000ms (20.0 seconds)</div>
+        <div style="margin-top: 8px;"><strong>Occurrences at (ms):</strong> 1708423242000 1708423272000 1708423282000 </div>
+        <div style="margin-top: 8px; color: #e74c3c;"><strong>Action Required:</strong> This pattern indicates the issue is systematic and needs architectural fix, not just restart.</div>
+      </div>
+      <div style="margin-bottom: 20px; border-left: 4px solid #3498db; padding: 15px; background: #f8f8f8; border-radius: 4px;">
+        <div style="color: #3498db; font-weight: bold; font-size: 16px; margin-bottom: 8px;">2x Timeout in QNX</div>
+        <div><strong>Affected Service:</strong> <code>kernel</code></div>
+        <div><strong>Average Time Between Failures:</strong> 10000ms (10.0 seconds)</div>
+        <div style="margin-top: 8px;"><strong>Occurrences at (ms):</strong> 1708423270000 1708423280000 </div>
+        <div style="margin-top: 8px; color: #e74c3c;"><strong>Action Required:</strong> This pattern indicates the issue is systematic and needs architectural fix, not just restart.</div>
+      </div>
+    </div>
+    <div class="details">
+      <h2>⛔ Failure Sequence Patterns (Event Correlations)</h2>
+      <p style="margin-bottom: 15px;">These sequences show how failures cascade - when one event triggers another predictable sequence.</p>
+      <div style="margin-bottom: 15px; padding: 12px; background: #fff3cd; border-left: 4px solid #e74c3c; border-radius: 4px;">
+        <span style="color: #e74c3c; font-weight: bold;">[CRITICAL]</span> Crash → Crash (occurred 3 times)
+        <div style="margin-top: 8px; color: #c0392b;"><strong>⚠️ PATTERN DETECTED:</strong> This sequence repeats regularly - implement prevention logic</div>
+      </div>
+      <div style="margin-bottom: 15px; padding: 12px; background: #fff3cd; border-left: 4px solid #f39c12; border-radius: 4px;">
+        <span style="color: #f39c12; font-weight: bold;">[WARNING]</span> Crash → Timeout (occurred 2 times)
+      </div>
+      <div style="margin-bottom: 15px; padding: 12px; background: #fff3cd; border-left: 4px solid #f39c12; border-radius: 4px;">
+        <span style="color: #f39c12; font-weight: bold;">[WARNING]</span> Reset → Reset (occurred 2 times)
+      </div>
+      <div style="margin-bottom: 15px; padding: 12px; background: #fff3cd; border-left: 4px solid #f39c12; border-radius: 4px;">
+        <span style="color: #f39c12; font-weight: bold;">[WARNING]</span> Watchdog → Watchdog (occurred 2 times)
+      </div>
+      <div style="margin-bottom: 15px; padding: 12px; background: #fff3cd; border-left: 4px solid #f39c12; border-radius: 4px;">
+        <span style="color: #f39c12; font-weight: bold;">[WARNING]</span> Timeout → Timeout (occurred 2 times)
+      </div>
+      <div style="margin-bottom: 15px; padding: 12px; background: #fff3cd; border-left: 4px solid #f39c12; border-radius: 4px;">
+        <span style="color: #f39c12; font-weight: bold;">[WARNING]</span> Watchdog → Reset (occurred 2 times)
+      </div>
+    </div>
+    <div class="details">
+      <h2>🎯 Priority Recommendations (Action Plan)</h2>
+      <p style="margin-bottom: 15px;">Ranked by impact and criticality. Address items in order for maximum system stability improvement.</p>
+      <div style="margin-bottom: 20px; border: 2px solid #e74c3c; padding: 15px; border-radius: 4px; background: #fafafa;">
+        <div style="color: #e74c3c; font-weight: bold; font-size: 14px; margin-bottom: 8px;">PRIORITY #1 - CRITICAL IMPACT</div>
+        <div><strong>Issue:</strong> kernel crashed 4 times</div>
+        <div><strong>Affected Service:</strong> <code>kernel</code></div>
+        <div style="margin-top: 8px; background: #e8f4f8; padding: 10px; border-radius: 4px;"><strong>Suggested Action:</strong> Investigate root cause of 4 crashes; add defensive checks in kernel module</div>
+        <div style="margin-top: 8px; color: #555;"><strong>Estimated Effort:</strong> High (2-3 days)</div>
+      </div>
+      <div style="margin-bottom: 20px; border: 2px solid #e74c3c; padding: 15px; border-radius: 4px; background: #fafafa;">
+        <div style="color: #e74c3c; font-weight: bold; font-size: 14px; margin-bottom: 8px;">PRIORITY #2 - CRITICAL IMPACT</div>
+        <div><strong>Issue:</strong> services crashed 3 times</div>
+        <div><strong>Affected Service:</strong> <code>services</code></div>
+        <div style="margin-top: 8px; background: #e8f4f8; padding: 10px; border-radius: 4px;"><strong>Suggested Action:</strong> Investigate root cause of 3 crashes; add defensive checks in services module</div>
+        <div style="margin-top: 8px; color: #555;"><strong>Estimated Effort:</strong> High (2-3 days)</div>
+      </div>
+      <div style="margin-bottom: 20px; border: 2px solid #f39c12; padding: 15px; border-radius: 4px; background: #fafafa;">
+        <div style="color: #f39c12; font-weight: bold; font-size: 14px; margin-bottom: 8px;">PRIORITY #3 - HIGH IMPACT</div>
+        <div><strong>Issue:</strong> Crash occurred 4 times in QNX domain</div>
+        <div><strong>Affected Service:</strong> <code>kernel</code></div>
+        <div style="margin-top: 8px; background: #e8f4f8; padding: 10px; border-radius: 4px;"><strong>Suggested Action:</strong> Pattern detected: Crash repeats every ~23333ms; implement retry logic with exponential backoff</div>
+        <div style="margin-top: 8px; color: #555;"><strong>Estimated Effort:</strong> Medium (1-2 days)</div>
+      </div>
+      <div style="margin-bottom: 20px; border: 2px solid #f39c12; padding: 15px; border-radius: 4px; background: #fafafa;">
+        <div style="color: #f39c12; font-weight: bold; font-size: 14px; margin-bottom: 8px;">PRIORITY #4 - HIGH IMPACT</div>
+        <div><strong>Issue:</strong> Crash occurred 3 times in Android domain</div>
+        <div><strong>Affected Service:</strong> <code>services</code></div>
+        <div style="margin-top: 8px; background: #e8f4f8; padding: 10px; border-radius: 4px;"><strong>Suggested Action:</strong> Pattern detected: Crash repeats every ~35000ms; implement retry logic with exponential backoff</div>
+        <div style="margin-top: 8px; color: #555;"><strong>Estimated Effort:</strong> Medium (1-2 days)</div>
+      </div>
+      <div style="margin-bottom: 20px; border: 2px solid #f39c12; padding: 15px; border-radius: 4px; background: #fafafa;">
+        <div style="color: #f39c12; font-weight: bold; font-size: 14px; margin-bottom: 8px;">PRIORITY #5 - HIGH IMPACT</div>
+        <div><strong>Issue:</strong> Timeout occurred 3 times in Android domain</div>
+        <div><strong>Affected Service:</strong> <code>services</code></div>
+        <div style="margin-top: 8px; background: #e8f4f8; padding: 10px; border-radius: 4px;"><strong>Suggested Action:</strong> Pattern detected: Timeout repeats every ~20000ms; implement retry logic with exponential backoff</div>
+        <div style="margin-top: 8px; color: #555;"><strong>Estimated Effort:</strong> Medium (1-2 days)</div>
+      </div>
+    </div>
+    <div class="details">
+      <h2>📚 What Are Services? (System Architecture Reference)</h2>
+      <p style="margin-bottom: 15px;">Services are independent software components running on the automotive platform that provide specific functionality. They communicate with each other and enable the vehicle to function correctly.</p>
+      
+      <h3>Common Automotive Services:</h3>
+      <table style="margin-top: 15px;">
+        <tr><th>Service Name</th><th>Purpose</th><th>Domain</th><th>Impact if Failed</th></tr>
+        <tr><td><strong>NetworkManager</strong></td><td>Manages network connectivity and communication</td><td>QNX/Android</td><td>Loss of network communication; system isolation</td></tr>
+        <tr><td><strong>SystemServer</strong></td><td>Core OS system services (sensors, hardware)</td><td>Android</td><td>Hardware access lost; sensor data unavailable</td></tr>
+        <tr><td><strong>MediaServer</strong></td><td>Audio/video streaming and multimedia</td><td>Android</td><td>No multimedia; infotainment unavailable</td></tr>
+        <tr><td><strong>AudioFlinger</strong></td><td>Audio engine and sound processing</td><td>Android</td><td>No audio output; critical alerts silent</td></tr>
+        <tr><td><strong>GpsService</strong></td><td>GPS/navigation and location services</td><td>QNX</td><td>Navigation unavailable; location unknown</td></tr>
+        <tr><td><strong>StorageManager</strong></td><td>File system and data storage management</td><td>QNX</td><td>Data loss; cannot access files</td></tr>
+        <tr><td><strong>zygote</strong></td><td>Android app process spawner</td><td>Android</td><td>Cannot launch apps; system broken</td></tr>
+      </table>
+    </div>
+    <div class="details">
+      <h2>🚨 Summary: 26 Issues Detected</h2>
+      <p style="margin-bottom: 15px;">Review each issue above and follow the remediation steps to restore system stability.</p>
+    </div>
+    <div class="details">
+      <h2>Per-Domain Breakdown</h2>
+      <table>
+        <tr>
+          <th>Domain</th>
+          <th>Service Starts</th>
+          <th>Service Crashes</th>
+          <th>System Crashes</th>
+          <th>Timeouts</th>
+          <th>Watchdog</th>
+          <th>Resets</th>
+          <th>Discrepancies</th>
+          <th>Deviations</th>
+        </tr>
+        <tr>
+          <td><strong>Android</strong></td>
+          <td>5</td>
+          <td class="status-fail">3</td>
+          <td class="status-fail">1</td>
+          <td class="status-warn">3</td>
+          <td>2</td>
+          <td class="status-warn">2</td>
+          <td class="status-fail">1</td>
+          <td class="status-fail">1</td>
+        </tr>
+        <tr>
+          <td><strong>QNX</strong></td>
+          <td>5</td>
+          <td class="status-fail">4</td>
+          <td >0</td>
+          <td class="status-warn">2</td>
+          <td>2</td>
+          <td class="status-warn">3</td>
+          <td class="status-fail">1</td>
+          <td class="status-fail">1</td>
+        </tr>
+      </table>
+    </div>
+    <div class="details">
+      <h2>Executive Summary</h2>
+      <p><strong>Overall Status: ❌ FAIL</strong></p>
+      <p>Total Issues Found: <strong>22</strong></p>
+      <p>Boot Time: <strong>62000 ms</strong></p>
+      <p>Services Started: <strong>10</strong></p>
+    </div>
+    <footer>
+      <p>Cross-Domain Automotive Log Intelligence Engine</p>
+      <p>For support, contact the validation team</p>
+    </footer>
+  </div>
+</body>
+</html>

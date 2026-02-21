@@ -1,0 +1,18 @@
+1708423202000 Android system SystemServer service started
+1708423207000 Android services MediaServer service started
+1708423212000 Android services AudioFlinger service started
+1708423217000 Android services MediaServer service crashed
+1708423222000 Android framework watchdog triggered
+1708423227000 Android system reset rebooted
+1708423237000 Android services MediaServer service started
+1708423242000 Android services AudioFlinger timeout occurred
+1708423247000 Android framework watchdog triggered
+1708423252000 Android system reset after crash
+1708423262000 Android services MediaServer service started
+1708423267000 Android services MediaServer service crashed
+1708423272000 Android services AudioFlinger timeout
+1708423277000 Android system discrepancy in messaging
+1708423282000 Android services AudioFlinger timeout
+1708423287000 Android services MediaServer service crashed
+1708423292000 Android framework abnormal behavior detected
+1708423297000 Android system reset detected

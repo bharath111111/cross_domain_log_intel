@@ -1,0 +1,17 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^python3 << 'PYEOF'\ncontent = \"\"\"// Main CLI entrypoint\n// Accepts two log files: qnx and android, parses, merges, classifies and emits JSON metrics\n\nuse anyhow::Result;\nuse std::env;\n\nmod models;\nmod parser;\nmod classifier;\nmod metrics;\n\nuse models::\\{Domain, LogEntry\\};\nuse parser::parse_log;\nuse classifier::classify_logs;\nuse metrics::generate_metrics;\n\nfn usage\\(\\) \\{\n    eprintln!\\(\"Usage: cargo run -- <qnx\\.log> <android\\.log>\"\\);\n\\}\n\nfn main\\(\\) -> Result<\\(\\)> \\{\n    let args: Vec<String> = env::args\\(\\)\\.collect\\(\\);\n    if args\\.len\\(\\) != 3 \\{\n        usage\\(\\);\n        return Err\\(anyhow::anyhow!\\(\"expected two file arguments\"\\)\\);\n    \\}\n\n    let qnx_path = &args\\[1\\];\n    let android_path = &args\\[2\\];\n\n    // Parse logs\n    let mut qnx_entries = parse_log\\(qnx_path, Domain::Qnx\\)\\?;\n    let mut android_entries = parse_log\\(android_path, Domain::Android\\)\\?;\n\n    // Merge and sort\n    let mut all: Vec<LogEntry> = Vec::new\\(\\);\n    all\\.append\\(&mut qnx_entries\\);\n    all\\.append\\(&mut android_entries\\);\n    all\\.sort_by_key\\(\\|e\\| e\\.timestamp\\);\n\n    // Classify and generate metrics\n    let events = classify_logs\\(&all\\);\n    let report = generate_metrics\\(&events\\);\n\n    // Output JSON\n    let json = serde_json::to_string_pretty\\(&report\\)\\?;\n    println!\\(\"\\{\\}\", json\\);\n\n    Ok\\(\\(\\)\\)\n\\}\n\"\"\"\nwith open\\('/tmp/cross_domain_log_intel/src/main\\.rs', 'w'\\) as f:\n    f\\.write\\(content\\)\nprint\\(\"File written successfully\"\\)\nPYEOF\n$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^head -20 src/main\\.rs && echo \"\\.\\.\\.\" && cargo build 2>&1 \\| head -40$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python3 -c \"\nimport subprocess\nqnx = '''1708423200000 QNX kernel syslogd service started\n1708423205000 QNX kernel NetworkManager service started\n1708423210000 QNX kernel AudioServer service started\n1708423215000 QNX kernel GpsService crashed\n1708423220000 QNX kernel WatchdogService watchdog triggered\n1708423225000 QNX kernel StorageManager timeout'''\n\nandroid = '''1708423202000 Android system zygote service started\n1708423207000 Android system SystemServer service started\n1708423212000 Android system MediaServer service started\n1708423217000 Android system AudioFlinger crash panic\n1708423222000 Android framework timeout detected\n1708423227000 Android system watchdog rebooted'''\n\nwith open\\('qnx\\.log', 'w'\\) as f:\n    f\\.write\\(qnx\\)\nwith open\\('android\\.log', 'w'\\) as f:\n    f\\.write\\(android\\)\nprint\\('Log files created'\\)\n\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "cargo run": true
+    }
+}
