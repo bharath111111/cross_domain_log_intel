@@ -1,0 +1,49 @@
+1708423200000 QNX kernel syslogd service started
+1708423205000 QNX kernel NetworkManager service started
+1708423210000 QNX kernel GpsService service started
+1708423215000 QNX kernel GpsService service crashed
+1708423220000 QNX kernel WatchdogService watchdog triggered
+1708423225000 QNX kernel System reset detected
+1708423235000 QNX kernel GpsService service started
+1708423240000 QNX kernel GpsService service crashed
+1708423245000 QNX kernel WatchdogService watchdog triggered
+1708423250000 QNX kernel System reset GpsService failed
+1708423260000 QNX kernel GpsService service started
+1708423265000 QNX kernel GpsService service crashed
+1708423270000 QNX kernel NetworkManager timeout
+1708423275000 QNX system discrepancy QNX vs Android
+1708423280000 QNX kernel NetworkManager timeout occurred
+1708423285000 QNX kernel GpsService service crashed
+1708423290000 QNX framework abnormal deviation
+1708423295000 QNX kernel System reset detected
+
+# Rich synthetic scenario: baseline monitoring + CAN injection + cascading failures
+1708423295000 QNX monitor CPU: 12.0% Mem: 256MB
+1708423298000 QNX monitor cpu=13.5% mem=260MB
+1708423299000 QNX monitor CPU: 14.2% Mem: 268MB
+
+# First CAN TX injection at 1708423300000
+1708423300000 QNX can TX sending frame id=123 data=DEADBEEF
+
+# Post-injection load spike and crashes
+1708423301000 QNX monitor CPU: 42.0% Mem: 380MB
+1708423302000 QNX monitor cpu=48.5% mem=450MB CAN response received 
+1708423303000 QNX kernel GpsService service crashed urgent=HIGH
+1708423304000 QNX kernel NetworkManager timeout waiting for response
+1708423305000 QNX monitor CPU: 55.0% Mem: 512MB OVERLOAD
+1708423306000 QNX kernel MediaService service crashed buffer_overflow=true
+1708423307000 QNX monitor cpu=58.0% mem=620MB
+1708423308000 QNX kernel WatchdogService watchdog triggered service=GpsService
+1708423310000 QNX monitor CPU: 45.0% Mem: 480MB
+
+# Second CAN TX injection at 1708423320000 (recovery period)
+1708423315000 QNX monitor CPU: 15.0% Mem: 270MB baseline_recovery
+1708423318000 QNX monitor cpu=16.5% mem=275MB
+1708423320000 QNX can TX sending frame id=200 data=A1B2C3 route=control_signal
+
+# Secondary effects on second frame
+1708423321000 QNX monitor CPU: 28.0% Mem: 350MB
+1708423322000 QNX kernel AudioService service crashed DSP_error=true
+1708423323000 QNX monitor cpu=32.0% mem=400MB
+1708423324000 QNX kernel NetworkManager timeout service_bridge
+1708423325000 QNX monitor CPU: 35.0% Mem: 420MB

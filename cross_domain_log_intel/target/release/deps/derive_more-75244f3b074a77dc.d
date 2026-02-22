@@ -1,0 +1,9 @@
+/Users/bharathkumarreddybusireddy/Desktop/rust_proj/cross_domain_log_intel/target/release/deps/derive_more-75244f3b074a77dc.d: /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derive_more-2.1.1/src/lib.rs /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derive_more-2.1.1/src/as.rs /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derive_more-2.1.1/src/as_dyn_error.rs
+
+/Users/bharathkumarreddybusireddy/Desktop/rust_proj/cross_domain_log_intel/target/release/deps/libderive_more-75244f3b074a77dc.rlib: /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derive_more-2.1.1/src/lib.rs /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derive_more-2.1.1/src/as.rs /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derive_more-2.1.1/src/as_dyn_error.rs
+
+/Users/bharathkumarreddybusireddy/Desktop/rust_proj/cross_domain_log_intel/target/release/deps/libderive_more-75244f3b074a77dc.rmeta: /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derive_more-2.1.1/src/lib.rs /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derive_more-2.1.1/src/as.rs /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derive_more-2.1.1/src/as_dyn_error.rs
+
+/Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derive_more-2.1.1/src/lib.rs:
+/Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derive_more-2.1.1/src/as.rs:
+/Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/derive_more-2.1.1/src/as_dyn_error.rs:

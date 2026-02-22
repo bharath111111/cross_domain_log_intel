@@ -123,6 +123,8 @@ pub struct MetricsReport {
     pub by_domain: HashMap<String, DomainMetrics>,
     #[serde(skip)]
     pub events: Vec<SystemEvent>,  // For detailed reporting, not serialized
+    #[serde(skip)]
+    pub load_samples: Vec<LoadSample>,
 }
 
 #[derive(Serialize, Debug)]
@@ -137,17 +139,50 @@ pub struct DomainMetrics {
     pub deviations: usize,
 }
 
-/// Service-specific health metrics
-#[derive(Debug, Clone)]
-pub struct ServiceHealth {
+/// CAN frame representation (simple)
+#[derive(Debug, Clone, Serialize)]
+pub struct CanFrame {
+    pub timestamp: i64, // ms
+    pub channel: String,
+    pub id: String,
+    pub data: String,
+    pub direction: String, // "RX" or "TX" or "-"
+    pub raw: String,
+}
+
+/// Ethernet frame (simple representation)
+#[derive(Debug, Clone, Serialize)]
+pub struct EthFrame {
+    pub timestamp: i64,
+    pub iface: String,
+    pub direction: String,
+    pub summary: String,
+    pub raw: String,
+}
+
+/// Simple load sample (cpu % and memory MB) extracted from logs when available
+#[derive(Debug, Clone, Serialize)]
+pub struct LoadSample {
+    pub timestamp: i64,
+    pub cpu_percent: Option<f64>,
+    pub mem_mb: Option<f64>,
+}
+
+/// Simplified DBC mapping structure (JSON)
+use serde::Deserialize;
+#[derive(Debug, Clone, Deserialize)]
+pub struct DbcSignal {
     pub name: String,
-    pub domain: Domain,
-    pub total_starts: usize,
-    pub total_crashes: usize,
-    pub total_timeouts: usize,
-    pub total_failures: usize,  // crashes + timeouts + discrepancies + deviations
-    pub health_score: f32,      // 0-100, where 100 is perfect
-    pub failure_rate: f32,      // percentage
+    pub start_bit: usize,
+    pub length: usize,
+    pub factor: Option<f64>,
+    pub offset: Option<f64>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct DbcMessage {
+    pub id: String,
+    pub signals: Vec<DbcSignal>,
 }
 
 /// Failure sequence pattern
@@ -171,16 +206,30 @@ pub struct RepetitiveError {
     pub time_between_failures_avg_ms: i64,
 }
 
-/// Priority recommendation
+/// Rich impact detail for a TX frame (CAN/ETH) showing correlated events
 #[derive(Debug, Clone)]
-pub struct Recommendation {
-    pub priority: usize,  // 1=highest, lower is more critical
-    pub impact: String,   // "CRITICAL", "HIGH", "MEDIUM"
-    pub issue: String,
-    pub affected_service: String,
-    pub suggested_action: String,
-    pub estimated_fix_effort: String,
+pub struct ImpactDetail {
+    pub frame_id: String,           // CAN ID or ETH summary
+    pub frame_source: String,       // "CAN" or "ETH"
+    pub timestamp: i64,
+    pub cpu_before: f64,
+    pub cpu_after: f64,
+    pub cpu_spike_pct: f64,
+    pub is_load_spike: bool,
+    pub crash_count: usize,
+    pub crashed_services: Vec<String>, // [ServiceName, ServiceName, ...]
+    pub timeout_count: usize,
+    pub watchdog_count: usize,
+    pub severity: String,           // "CRITICAL", "HIGH", "MEDIUM", "LOW"
+    pub confidence: f64,            // 0.0-1.0 (based on time delta, rate spike)
+    pub decoded_signals: Vec<(String, String)>, // [(SignalName, Value), ...]
+    pub raw_summary: String,
+    pub is_anomaly: bool,           // True if event rate is > 2 std-dev above mean
+    pub anomaly_zscore: f64,        // Z-score of event rate (>2.0 = anomalous)
+    pub causal_score: f64,          // 0-100: combined ranking for likely causation
 }
+
+// NOTE: Service health scores and priority recommendations removed as requested
 
 // TODO: Multi-run statistical comparison
 // TODO: HTML report export

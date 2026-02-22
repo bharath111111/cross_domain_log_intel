@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use chrono::Local;
 
 /// Generate a comprehensive `MetricsReport` from the detected events.
-pub fn generate_metrics(events: &[SystemEvent]) -> MetricsReport {
+pub fn generate_metrics(events: &[SystemEvent], load_samples: &[crate::models::LoadSample]) -> MetricsReport {
     let mut service_starts = 0usize;
     let mut service_crashes = 0usize;
     let mut system_crashes = 0usize;
@@ -91,6 +91,7 @@ pub fn generate_metrics(events: &[SystemEvent]) -> MetricsReport {
         total_deviations: deviations,
         by_domain,
         events: events.to_vec(),
+        load_samples: load_samples.to_vec(),
     }
 }
 

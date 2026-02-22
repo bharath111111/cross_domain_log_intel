@@ -1,0 +1,6 @@
+# This is a text description of pcapng packets for reference
+# Use this if you have a real .pcapng file, or the tool will parse it as binary
+
+# Sample TCP packet: eth0 RX 192.168.0.1:5555 -> 192.168.0.2:80 SYN at 1708423300000 ms
+# Sample TCP packet: eth0 RX 192.168.1.1:6666 -> 10.0.0.1:443 ACK at 1708423350000 ms
+# Sample UDP packet: eth0 RX 172.16.0.1:5000 -> 172.16.0.2:5001 at 1708423400000 ms
