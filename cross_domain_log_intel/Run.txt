@@ -1,0 +1,6 @@
+cd ~/Desktop/rust_proj/cross_domain_log_intel
+cargo run --bin collector
+
+
+QNX IP, username (or press Enter for root), password (or leave blank to try SSH key), port (Enter for 22).
+Android serial (leave blank to auto-detect).

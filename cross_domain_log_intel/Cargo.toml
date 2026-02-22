@@ -17,6 +17,8 @@ uuid = { version = "1.0", features = ["v4", "serde"] }
 tempfile = "3.8"
 futures-util = "0.3"
 bytes = "1"
+dirs = "5.0"
+ssh2 = "0.9"
 
 [[bin]]
 name = "cli"
@@ -25,3 +27,6 @@ path = "src/bin/cli.rs"
 [[bin]]
 name = "web"
 path = "src/bin/web.rs"
+[[bin]]
+name = "collector"
+path = "src/bin/collector.rs"

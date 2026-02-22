@@ -1,0 +1,9 @@
+/Users/bharathkumarreddybusireddy/Desktop/rust_proj/cross_domain_log_intel/target/debug/deps/alloc_stdlib-2d23910d230410d2.d: /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/lib.rs /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/heap_alloc.rs /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/std_alloc.rs
+
+/Users/bharathkumarreddybusireddy/Desktop/rust_proj/cross_domain_log_intel/target/debug/deps/liballoc_stdlib-2d23910d230410d2.rlib: /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/lib.rs /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/heap_alloc.rs /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/std_alloc.rs
+
+/Users/bharathkumarreddybusireddy/Desktop/rust_proj/cross_domain_log_intel/target/debug/deps/liballoc_stdlib-2d23910d230410d2.rmeta: /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/lib.rs /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/heap_alloc.rs /Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/std_alloc.rs
+
+/Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/lib.rs:
+/Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/heap_alloc.rs:
+/Users/bharathkumarreddybusireddy/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloc-stdlib-0.2.2/src/std_alloc.rs:
