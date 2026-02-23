@@ -6,6 +6,9 @@ use chrono::Local;
 use std::io::Write;
 use std::process::Stdio;
 use std::fs::OpenOptions;
+use std::collections::HashMap;
+use once_cell::sync::OnceCell;
+use serde::Deserialize;
 
 use cross_domain_log_intel::{
     models::{Domain, LogEntry},
@@ -23,6 +26,10 @@ fn main() -> Result<()> {
     println!("║   🚗 Automotive Log Collector                                 ║");
     println!("║   Automatic QNX & Android Log Extraction                     ║");
     println!("╚════════════════════════════════════════════════════════════════╝\n");
+    // Load config (if present)
+    if let Ok(cfg) = load_config() {
+        let _ = CONFIG.set(cfg);
+    }
 
     loop {
         print_menu()?;
@@ -65,6 +72,51 @@ fn print_menu() -> Result<()> {
     Ok(())
 }
 
+static CONFIG: OnceCell<Config> = OnceCell::new();
+
+#[derive(Debug, Deserialize, Clone)]
+struct Config {
+    default_profile: Option<String>,
+    profiles: Option<HashMap<String, Profile>>,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+struct Profile {
+    qnx_ip: Option<String>,
+    qnx_user: Option<String>,
+    qnx_port: Option<u16>,
+    qnx_password: Option<String>,
+    adb_serial: Option<String>,
+}
+
+fn load_config() -> Result<Config> {
+    let home = dirs::home_dir().ok_or_else(|| anyhow::anyhow!("home dir not found"))?;
+    let cfg_path = home.join(".log_collector").join("config.yaml");
+    if !cfg_path.exists() {
+        anyhow::bail!("no config file");
+    }
+    let s = std::fs::read_to_string(&cfg_path)?;
+    let cfg: Config = serde_yaml::from_str(&s)?;
+    Ok(cfg)
+}
+
+fn get_default_profile() -> Option<&'static Profile> {
+    if let Some(cfg) = CONFIG.get() {
+        if let Some(dp) = &cfg.default_profile {
+            if let Some(profiles) = &cfg.profiles {
+                if let Some(p) = profiles.get(dp) {
+                    // Safety: leak profile to 'static by cloning into Box
+                    // but avoid complexity: return reference via Box leak
+                    let boxed: Box<Profile> = Box::new(p.clone());
+                    let static_ref: &'static Profile = Box::leak(boxed);
+                    return Some(static_ref);
+                }
+            }
+        }
+    }
+    None
+}
+
 fn download_qnx_noninteractive(qnx_ip: &str, username: &str, password: &str, port: &str, session_dir: &str) -> Result<()> {
     let qnx_log_remote = "/var/log/qnx_system.log";
     let qnx_log_local = format!("{}/qnx.log", session_dir);
@@ -78,7 +130,7 @@ fn download_qnx_noninteractive(qnx_ip: &str, username: &str, password: &str, por
 
         let mut authed = false;
         if !password.is_empty() {
-            if session.userauth_password(username, password).is_ok() {
+            if session.userauth_password(&username, &password).is_ok() {
                 authed = true;
             }
         } else {
@@ -86,7 +138,7 @@ fn download_qnx_noninteractive(qnx_ip: &str, username: &str, password: &str, por
                 let priv_key = home.join(".ssh/id_rsa");
                 let pubk = home.join(".ssh/id_rsa.pub");
                 if priv_key.exists() {
-                    if session.userauth_pubkey_file(username, Some(&pubk), &priv_key, None).is_ok() {
+                    if session.userauth_pubkey_file(&username, Some(&pubk), &priv_key, None).is_ok() {
                         authed = true;
                     }
                 }
@@ -112,8 +164,8 @@ fn download_qnx_noninteractive(qnx_ip: &str, username: &str, password: &str, por
         // fallback to system scp
         let scp_output = Command::new("scp")
             .args(&[
-                "-P", port,
-                &format!("{}@{}:{}", username, qnx_ip, qnx_log_remote),
+                "-P", &port,
+                &format!("{}@{}:{}", &username, &qnx_ip, qnx_log_remote),
                 &qnx_log_local,
             ])
             .output();
@@ -160,36 +212,46 @@ fn download_android_noninteractive(device_serial: Option<String>, session_dir: &
 fn collect_both() -> Result<()> {
     println!("\n🔁 Parallel QNX + Android Collection");
     println!("────────────────────────────────────\n");
-
-    print!("🔗 QNX System IP Address: ");
+    let default_profile = get_default_profile();
+    let default_qnx_ip = default_profile.and_then(|p| p.qnx_ip.as_deref());
+    if let Some(def) = default_qnx_ip { print!("🔗 QNX System IP Address [{}]: ", def); } else { print!("🔗 QNX System IP Address: "); }
     std::io::stdout().flush()?;
     let mut qnx_ip = String::new();
     std::io::stdin().read_line(&mut qnx_ip)?;
-    let qnx_ip = qnx_ip.trim().to_string();
+    let mut qnx_ip = qnx_ip.trim().to_string();
+    if qnx_ip.is_empty() { if let Some(def) = default_qnx_ip { qnx_ip = def.to_string(); } }
 
-    print!("👤 QNX Username (default: root): ");
+    let default_user = default_profile.and_then(|p| p.qnx_user.as_deref());
+    if let Some(def) = default_user { print!("👤 QNX Username (default: {}): ", def); } else { print!("👤 QNX Username (default: root): "); }
     std::io::stdout().flush()?;
     let mut username = String::new();
     std::io::stdin().read_line(&mut username)?;
-    let username = if username.trim().is_empty() { "root".to_string() } else { username.trim().to_string() };
+    let mut username = username.trim().to_string();
+    if username.is_empty() { if let Some(def) = default_user { username = def.to_string(); } else { username = "root".to_string(); } }
 
-    print!("🔐 QNX Password (leave blank to try key): ");
+    let default_pass = default_profile.and_then(|p| p.qnx_password.as_deref());
+    if default_pass.is_some() { print!("🔐 QNX Password (from profile or press Enter): "); } else { print!("🔐 QNX Password (leave blank to try key): "); }
     std::io::stdout().flush()?;
     let mut password = String::new();
     std::io::stdin().read_line(&mut password)?;
-    let password = password.trim().to_string();
+    let mut password = password.trim().to_string();
+    if password.is_empty() { if let Some(def) = default_pass { password = def.to_string(); } }
 
-    print!("📁 QNX Port (default: 22): ");
+    let default_port = default_profile.and_then(|p| p.qnx_port.map(|p| p.to_string()));
+    if let Some(def) = &default_port { print!("📁 QNX Port (default: {}): ", def); } else { print!("📁 QNX Port (default: 22): "); }
     std::io::stdout().flush()?;
     let mut port = String::new();
     std::io::stdin().read_line(&mut port)?;
-    let port = if port.trim().is_empty() { "22".to_string() } else { port.trim().to_string() };
+    let mut port = port.trim().to_string();
+    if port.is_empty() { if let Some(def) = default_port { port = def; } else { port = "22".to_string(); } }
 
-    print!("📱 Android device serial (leave blank to auto-detect): ");
+    let default_adb = default_profile.and_then(|p| p.adb_serial.as_deref());
+    if let Some(def) = default_adb { print!("📱 Android device serial [{}] (leave blank to auto-detect): ", def); } else { print!("📱 Android device serial (leave blank to auto-detect): "); }
     std::io::stdout().flush()?;
     let mut serial = String::new();
     std::io::stdin().read_line(&mut serial)?;
-    let serial = serial.trim().to_string();
+    let mut serial = serial.trim().to_string();
+    if serial.is_empty() { if let Some(def) = default_adb { serial = def.to_string(); } }
     let device_serial = if serial.is_empty() { None } else { Some(serial) };
 
     let storage = ensure_storage_dir()?;
@@ -299,29 +361,62 @@ fn collect_qnx_logs() -> Result<()> {
     let session_dir = format!("{}/qnx_{}", storage, timestamp_str());
     fs::create_dir_all(&session_dir)?;
 
-    print!("🔗 QNX System IP Address: ");
+    let default_profile = get_default_profile();
+    let default_qnx_ip = default_profile.and_then(|p| p.qnx_ip.as_deref());
+    if let Some(def) = default_qnx_ip {
+        print!("🔗 QNX System IP Address [{}]: ", def);
+    } else {
+        print!("🔗 QNX System IP Address: ");
+    }
     std::io::stdout().flush()?;
     let mut qnx_ip = String::new();
     std::io::stdin().read_line(&mut qnx_ip)?;
-    let qnx_ip = qnx_ip.trim();
+    let mut qnx_ip = qnx_ip.trim().to_string();
+    if qnx_ip.is_empty() {
+        if let Some(def) = default_qnx_ip { qnx_ip = def.to_string(); }
+    }
 
-    print!("👤 Username (default: root): ");
+    let default_user = default_profile.and_then(|p| p.qnx_user.as_deref());
+    if let Some(def) = default_user {
+        print!("👤 Username (default: {}): ", def);
+    } else {
+        print!("👤 Username (default: root): ");
+    }
     std::io::stdout().flush()?;
     let mut username = String::new();
     std::io::stdin().read_line(&mut username)?;
-    let username = if username.trim().is_empty() { "root" } else { username.trim() };
+    let mut username = username.trim().to_string();
+    if username.is_empty() {
+        if let Some(def) = default_user { username = def.to_string(); } else { username = "root".to_string(); }
+    }
 
-    print!("🔐 Password: ");
+    let default_pass = default_profile.and_then(|p| p.qnx_password.as_deref());
+    if default_pass.is_some() {
+        print!("🔐 Password (from profile or press Enter): ");
+    } else {
+        print!("🔐 Password: ");
+    }
     std::io::stdout().flush()?;
     let mut password = String::new();
     std::io::stdin().read_line(&mut password)?;
-    let password = password.trim();
+    let mut password = password.trim().to_string();
+    if password.is_empty() {
+        if let Some(def) = default_pass { password = def.to_string(); }
+    }
 
-    print!("📁 Port (default: 22): ");
+    let default_port = default_profile.and_then(|p| p.qnx_port.map(|p| p.to_string()));
+    if let Some(def) = &default_port {
+        print!("📁 Port (default: {}): ", def);
+    } else {
+        print!("📁 Port (default: 22): ");
+    }
     std::io::stdout().flush()?;
     let mut port = String::new();
     std::io::stdin().read_line(&mut port)?;
-    let port = if port.trim().is_empty() { "22" } else { port.trim() };
+    let mut port = port.trim().to_string();
+    if port.is_empty() {
+        if let Some(def) = default_port { port = def; } else { port = "22".to_string(); }
+    }
 
     println!("\n⏳ Connecting to QNX system at {}:{}...", qnx_ip, port);
 
@@ -339,7 +434,7 @@ fn collect_qnx_logs() -> Result<()> {
 
         let mut authed = false;
         if !password.is_empty() {
-            if session.userauth_password(username, password).is_ok() {
+            if session.userauth_password(&username, &password).is_ok() {
                 authed = true;
             }
         } else {
@@ -348,7 +443,7 @@ fn collect_qnx_logs() -> Result<()> {
                 let priv_key = home.join(".ssh/id_rsa");
                 let pubk = home.join(".ssh/id_rsa.pub");
                 if priv_key.exists() {
-                    if session.userauth_pubkey_file(username, Some(&pubk), &priv_key, None).is_ok() {
+                    if session.userauth_pubkey_file(&username, Some(&pubk), &priv_key, None).is_ok() {
                         authed = true;
                     }
                 }
@@ -379,8 +474,8 @@ fn collect_qnx_logs() -> Result<()> {
         println!("Attempting system scp fallback (requires scp on PATH)...");
         let scp_output = Command::new("scp")
             .args(&[
-                "-P", port,
-                &format!("{}@{}:{}", username, qnx_ip, qnx_log_remote),
+                "-P", &port,
+                &format!("{}@{}:{}", &username, &qnx_ip, qnx_log_remote),
                 &qnx_log_local,
             ])
             .output();
@@ -417,6 +512,8 @@ fn collect_android_logs() -> Result<()> {
     fs::create_dir_all(&session_dir)?;
 
     println!("🔌 Ensure your Android device is connected via ADB...");
+    let default_profile = get_default_profile();
+    let default_adb = default_profile.and_then(|p| p.adb_serial.as_deref());
     
     // Try to detect devices via `adb devices`
     let devices_output = Command::new("adb").arg("devices").arg("-l").output();
@@ -459,13 +556,19 @@ fn collect_android_logs() -> Result<()> {
     }
 
     if chosen_serial.is_none() {
-        print!("📱 Enter device serial (or leave blank to use default adb): ");
+        if let Some(def) = default_adb {
+            print!("📱 Enter device serial [{}] (leave blank to use default): ", def);
+        } else {
+            print!("📱 Enter device serial (or leave blank to use default adb): ");
+        }
         std::io::stdout().flush()?;
         let mut manual = String::new();
         std::io::stdin().read_line(&mut manual)?;
         let manual = manual.trim();
         if !manual.is_empty() {
             chosen_serial = Some(manual.to_string());
+        } else if let Some(def) = default_adb {
+            chosen_serial = Some(def.to_string());
         }
     }
 
